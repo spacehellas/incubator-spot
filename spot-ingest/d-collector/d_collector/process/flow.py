@@ -1,20 +1,3 @@
-#
-# Licensed to the Apache Software Foundation (ASF) under one or more
-# contributor license agreements.  See the NOTICE file distributed with
-# this work for additional information regarding copyright ownership.
-# The ASF licenses this file to You under the Apache License, Version 2.0
-# (the "License"); you may not use this file except in compliance with
-# the License.  You may obtain a copy of the License at
-#
-#    http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-#
-
 '''
     Methods that will be used to process and prepare netflow data, before being sent to
 Kafka cluster.
@@ -25,8 +8,8 @@ import re
 import sys
 import tempfile
 
-from common.utils import Util
-from datetime     import datetime
+from datetime          import datetime
+from d_collector.utils import popen
 
 COMMAND = 'nfdump -r {0} -o csv {1} > {2}'
 EPOCH   = datetime(1970, 1, 1)
@@ -44,14 +27,12 @@ def convert(netflow, tmpdir, opts='', prefix=None):
     :rtype         : ``str``
     :raises OSError: If an error occurs while executing the `nfdump` command.
     '''
-    logger = logging.getLogger('SPOT.INGEST.FLOW.PROCESS')
+    logger = logging.getLogger('SHIELD.DC.PROCESS.FLOW')
 
     with tempfile.NamedTemporaryFile(prefix=prefix, dir=tmpdir, delete=False) as fp:
         command = COMMAND.format(netflow, opts, fp.name)
 
-        logger.debug('Execute command: {0}'.format(command))
-        Util.popen(command, raises=True)
-
+        popen(command, raises=True)
         return fp.name
 
 def prepare(csvfile, max_req_size):
@@ -72,7 +53,7 @@ def prepare(csvfile, max_req_size):
     '''
     msg_list  = []
     msg_size  = segmentid = 0
-    logger    = logging.getLogger('SPOT.INGEST.FLOW.PROCESS')
+    logger    = logging.getLogger('SHIELD.DC.PROCESS.FLOW')
     partition = timestamp = None
     pattern   = re.compile('[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}')
 
