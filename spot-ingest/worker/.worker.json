@@ -1,0 +1,21 @@
+{
+    "database_name": "dbname",
+    "kerberos": {
+        "kinit": "/usr/bin/kinit",
+        "principal": "user",
+        "keytab": "/opt/security/user.keytab"
+    },
+    "streaming": {
+        "app_name": "",
+        "batch_duration": 30,
+        "deploy_mode": "client",
+        "driver_memory": "",
+        "executor_cores": "",
+        "executor_memory": "",
+        "group_id": "",
+        "master": "yarn",
+        "num_executors": "",
+        "redirect_spark2_logs": "/tmp/streaming_worker_spark2.log"
+    },
+    "zkQuorum": "zk_server:zk_port"
+}

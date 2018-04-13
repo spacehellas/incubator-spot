@@ -5,27 +5,21 @@
     Main command-line entry point.
 '''
 
-__version__ = '0.9.2 beta'
-
 import json
 import os
 import pipelines
 import sys
-import tempfile
 
-from argparse        import ArgumentParser, HelpFormatter
-from collector       import DistributedCollector
-from multiprocessing import cpu_count
-from utils           import authenticate, get_logger
+from argparse import ArgumentParser, HelpFormatter
+from utils    import authenticate, get_logger
+
+__version__ = '0.7.3 beta'
 
 STATE = {
-    'file_watcher': {},
-    'interval': 5,
+    'database_name': None,
     'kerberos': {},
-    'local_staging': tempfile.gettempdir(),
-    'process_opts': '',
-    'processes': cpu_count(),
-    'producer': {}
+    'streaming': {},
+    'zkQuorum': None
 }
 
 def main():
@@ -34,12 +28,9 @@ def main():
         conf  = json.loads(args.config_file.read())
 
         # .............................set up logger
-        get_logger('SHIELD.DC', args.log_level)
+        get_logger('SHIELD.WORKER', args.log_level)
 
         # .............................set up STATE
-        conf.update(conf['pipelines'][args.type])
-        del conf['pipelines']
-
         for key in conf.keys():
             if isinstance(conf[key], basestring) and conf[key].strip() == '':
                 continue
@@ -51,11 +42,15 @@ def main():
         if os.getenv('KRB_AUTH'):
             authenticate(**STATE['kerberos'])
 
-        # .............................instantiate Distributed Collector
-        dc = DistributedCollector(args.type, args.topic, args.partition,
-                args.skip_conversion, **STATE)
+        # .............................instantiate Streaming Worker
+        for key in STATE['streaming'].keys():
+            if (isinstance(STATE['streaming'][key], basestring) and
+                STATE['streaming'][key].strip() == ''):
+                del STATE['streaming'][key]
 
-        dc.start()
+        streaming_worker(args.flow, args.topic, args.partition, STATE['database_name'],
+            **STATE['streaming'])
+
     except SystemExit: raise
     except:
         sys.excepthook(*sys.exc_info())
@@ -68,28 +63,22 @@ def parse_args():
     :returns: On success, a namedtuple of Values instances.
     '''
     parser   = ArgumentParser(
-        prog='dc',
-        description='Distributed Collector transmits to Kafka cluster already processed '
-            'files in a comma-separated (CSV) output format.',
+        prog='worker',
+        description='Worker daemon consumes incoming messages from the Kafka cluster and '
+            'stores them in the big data infrastructure.',
         epilog='END',
         formatter_class=lambda prog: HelpFormatter(prog, max_help_position=36, width=80),
-        usage='dc [OPTIONS]... -t <pipeline> --topic <topic>')
+        usage='worker [OPTIONS]... ')
 
     # .................................set optional arguments
     parser._optionals.title = 'Optional Arguments'
 
     parser.add_argument('-c', '--config-file', metavar='FILE', type=file,
-        default=os.path.expanduser('~/.d-collector.json'),
+        default=os.path.expanduser('~/.worker.json'),
         help='path of configuration file')
 
     parser.add_argument('-l', '--log-level', metavar='STRING', default='INFO',
         help='determine the level of the logger')
-
-    parser.add_argument('-p', '--partition', metavar='INTEGER', default=None, type=int,
-        help='optionally specify a partition')
-
-    parser.add_argument('-s', '--skip-conversion', action='store_true', default=False,
-        help='no transformation will be applied to the data; useful for importing CSV files')
 
     parser.add_argument('-v', '--version', action='version', version='%(prog)s {0}'
         .format(__version__))
@@ -97,13 +86,26 @@ def parse_args():
     # .................................set required arguments
     required = parser.add_argument_group('Required Arguments')
 
+    required.add_argument('-p', '--partition', required=True, metavar='INTEGER',
+        help='number of partition to consume')
+
     required.add_argument('--topic', required=True, metavar='STRING',
-        help='name of topic where the messages will be published')
+        help='name of topic where the messages are published')
 
     required.add_argument('-t', '--type', choices=pipelines.__all__, required=True,
-        help='type of data that will be collected', metavar='STRING')
+        help='type of data that will be ingested', metavar='STRING')
 
     return parser.parse_args()
 
+def streaming_worker(datatype, topic, partition, db_name, **kwargs):
+    '''
+        Start Streaming Worker using `spark2-submit` command.
+
+    :param datatype : Type of data that will be ingested
+    :param topic    : Topic where the messages are published.
+    :param partition: Number of partition to consume.
+    :param db_name  : Name of the database in Hive.
+    '''
+    command = 'spark2-submit'
 
 if __name__ == '__main__': main()

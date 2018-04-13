@@ -4,7 +4,7 @@
 
 import logging
 import os
-import process
+import pipelines
 import shutil
 
 from multiprocessing import current_process
@@ -45,7 +45,7 @@ def publish(rawfile, tmpdir, opts, datatype, topic, partition, skip_conv, **kwar
     allpassed = True
 
     try:
-        module      = getattr(process, datatype)
+        module      = getattr(pipelines, datatype)
         producer    = Producer(**kwargs)
 
         if skip_conv:

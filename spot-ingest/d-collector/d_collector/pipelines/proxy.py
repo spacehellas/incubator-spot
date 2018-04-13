@@ -8,8 +8,8 @@ import re
 import sys
 import tempfile
 
-from datetime          import datetime
-from d_collector.utils import popen
+from datetime import datetime
+from ..utils  import popen
 
 COMMAND = 'cp {0} {1} {2}'
 EPOCH = datetime(1970, 1, 1)

@@ -2,8 +2,8 @@
 
 import os
 
-from d_collector import __version__
-from setuptools  import setup, find_packages
+from d_collector.__main__ import __version__
+from setuptools           import setup, find_packages
 
 setup(
     name='distributed-collector',
