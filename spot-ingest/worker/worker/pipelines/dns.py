@@ -41,7 +41,8 @@ def stream_parser(fields):
         long(float(fields[2])),
         int(fields[3]),
         fields[5], fields[4], fields[6], fields[8],
-        int(fields[7]), int(fields[9]),
+        0 if fields[7] == '' else int(fields[7]),
+        0 if fields[8] == '' else int(fields[9]),
         fields[10],
         dt.year, dt.month, dt.day, dt.hour
     ]
