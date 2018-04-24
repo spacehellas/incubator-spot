@@ -38,7 +38,7 @@ function safe_mkdir() {
 }
 
 SPOTCONF="/etc/spot.conf"
-DSOURCES=('flow' 'dns' 'proxy')
+DSOURCES=('dns', 'flow', 'ids_event', 'ids_packet', 'proxy')
 DFOLDERS=('binary' 
 'stage'
 'hive'

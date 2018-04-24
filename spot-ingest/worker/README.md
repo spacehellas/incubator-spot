@@ -80,7 +80,7 @@ Required Arguments:
 
 END
 
-The only mandatory arguments for the Streaming Worker are the topic, the partition and the type of the pipeline (`flow`, `dns` or `proxy`). Streaming Worker _does not create a new topic_, so you have to pass _an existing one_. By default, it loads configuration parameters from the `~/.d-collector.json` file, but you can override it with `-c FILE, --config-file FILE` option.
+The only mandatory arguments for the Streaming Worker are the topic, the partition and the type of the pipeline (`dns`, `flow`, `ids_event`, `ids_packet` or `proxy`). Streaming Worker _does not create a new topic_, so you have to pass _an existing one_. By default, it loads configuration parameters from the `~/.d-collector.json` file, but you can override it with `-c FILE, --config-file FILE` option.
 
 ### Run `run.sh` Script
 To start Streaming Worker:<br />

@@ -70,6 +70,24 @@ After the installation, a configuration file (in `JSON` format) will be generate
           "local_staging": "/tmp",
           "process_opts": ""
         },
+        "ids_event": {
+          "file_watcher": {
+            "collector_path": "/collector/path",
+            "recursive": "true",
+            "supported_files": [".*.json"]
+          },
+          "local_staging": "/tmp",
+          "process_opts": ""
+        },
+        "ids_packet": {
+          "file_watcher": {
+            "collector_path": "/collector/path",
+            "recursive": "true",
+            "supported_files": [".*.json"]
+          },
+          "local_staging": "/tmp",
+          "process_opts": ""
+        },
         "proxy": {
           "file_watcher": {
             "collector_path": "/collector/path",
@@ -152,7 +170,7 @@ Before you start using the Distributed Collector, you should print the usage mes
       
     END
 
-The only mandatory arguments for the Distributed Collector are the topic and the type of the pipeline (`flow`, `dns` or `proxy`). Distributed Collector _does not create a new topic_, so you have to pass _an existing one_. By default, it loads configuration parameters from the `~/.d-collector.json` file, but you can override it with `-c FILE, --config-file FILE` option.
+The only mandatory arguments for the Distributed Collector are the topic and the type of the pipeline (`dns`, `flow`, `ids_event`, `ids_packet` or `proxy`). Distributed Collector _does not create a new topic_, so you have to pass _an existing one_. By default, it loads configuration parameters from the `~/.d-collector.json` file, but you can override it with `-c FILE, --config-file FILE` option.
 
 ### Run `d-collector` Command
 To start Distributed Collector:<br />
