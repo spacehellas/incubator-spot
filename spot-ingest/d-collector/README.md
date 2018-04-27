@@ -167,8 +167,6 @@ Before you start using the Distributed Collector, you should print the usage mes
       --topic STRING                   name of topic where the messages will be
                                        published
       -t STRING, --type STRING         type of data that will be collected
-      
-    END
 
 The only mandatory arguments for the Distributed Collector are the topic and the type of the pipeline (`dns`, `flow`, `ids_event`, `ids_packet` or `proxy`). Distributed Collector _does not create a new topic_, so you have to pass _an existing one_. By default, it loads configuration parameters from the `~/.d-collector.json` file, but you can override it with `-c FILE, --config-file FILE` option.
 
